@@ -5,7 +5,119 @@ import { getUniqueValues, formatPrice } from '../utils/helpers'
 import { FaCheck } from 'react-icons/fa'
 
 const Filters = () => {
-  return <h4>filters</h4>
+
+  const {
+    filters:{
+      text, category, company, color, min_price, max_price, price, shipping
+    }, updateFilters, clearFilters, all_products
+  } = useFilterContext();
+
+  const categories = getUniqueValues(all_products, 'category');
+  const companies = getUniqueValues(all_products, 'company');
+  const colors = getUniqueValues(all_products, 'colors');
+  
+
+  return <Wrapper>
+    <div className="content">
+      <form onSubmit={(e)=>e.preventDefault()}>
+        {/* search input */}
+        <div className="form-control">
+          <input 
+            type="text" 
+            name='text' 
+            value={text} 
+            onChange={updateFilters}
+            className='search-input' 
+            placeholder='search here...' 
+          />
+        </div>
+        {/* end of search input */}
+        {/* categories */}
+        <div className="form-control">
+          <h5>category</h5>
+          <div>
+            {categories.map((currentCategory, index)=>{
+              return <button 
+                  key={index}
+                  onClick={updateFilters}
+                  className={`${currentCategory.toLowerCase() === category ? "active" : null}`}
+                  name='category'
+                  type='button'
+                >{currentCategory}</button>
+            })}
+          </div>
+        </div>
+        {/* end of categories */}
+        {/* companies */}
+        <div className="form-control">
+          <h5>company</h5>
+          <select name="company" id="company" value={company} onChange={updateFilters} className='company'>
+            {companies.map((eachCompany, index)=>{
+              return <option key={index} >{eachCompany}</option>
+            })}
+          </select>
+        </div>
+        {/* end of companies */}
+        {/* colors */}
+        <div className="form-control">
+          <h5>colors</h5>
+          <div className="colors">
+            {colors.map((currentColor, index)=>{
+              if(currentColor === "all"){
+                return <button
+                  key={index}
+                  className={`${currentColor === color ? "all-btn active" : "all-btn"}`}
+                  onClick={updateFilters}
+                  data-color='all'
+                  name='color'
+                >all</button>
+              }
+              return <button 
+                key={index} 
+                name='color' 
+                onClick={updateFilters} 
+                className={`${currentColor === color ? "color-btn active" : "color-btn"}`} 
+                style={{background:`${currentColor}`}}
+                data-color={currentColor}
+              >
+                {currentColor === color ? <FaCheck /> : null}
+              </button>
+            })}
+          </div>
+        </div>
+        {/* end of colors */}
+        {/* price */}
+        <div className="form-control">
+          <h5>price</h5>
+          <p className='price'>{formatPrice(price)}</p>
+          <input 
+            type="range" 
+            name="price" 
+            id="price"
+            onChange={updateFilters}
+            min={min_price}
+            max={max_price}
+            value={price} 
+          />
+        </div>
+        {/* end of price */}
+        {/* shipping */}
+        <div className="form-control shipping">
+            <label htmlFor="shipping">free shipping</label>
+            <input 
+              type="checkbox" 
+              name="shipping" 
+              id="shipping"
+              value={shipping}
+              checked={shipping}
+              onChange={updateFilters} 
+            />
+        </div>
+        {/* end of shipping */}
+      </form>
+      <button type='button' className='clear-btn' onClick={clearFilters}>clear filters</button>
+    </div>
+  </Wrapper>
 }
 
 const Wrapper = styled.section`
